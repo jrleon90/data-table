@@ -1,6 +1,7 @@
 $(document).ready(function(){
-    
-    $.getJSON('../data/data.json', function(data){
+    // Retrieve data from JSON file
+    $.getJSON('/data-table/data/data.json', function(data){
+        // Create Datatable with data get from the JSON file
         $('#dataTable').DataTable({
             data: data,
             columns: [
@@ -8,6 +9,7 @@ $(document).ready(function(){
                 { data: 'componenttype' },
                 { data: 'systemname' },
                 { data: 'material' },
+                // If no diameter, set nominaldiameter
                 { data: null, render: function(data, type, row) {
                     if (typeof(data.diameter) === 'undefined') return data.nominaldiameter;
                     return data.diameter;
@@ -15,31 +17,37 @@ $(document).ready(function(){
                 { data: 'volume' },
                 { data: 'operatingpressure' },
                 { data: 'lifecyclestatus' },
+                // Set date format
                 { data: null, render: function(data, type, row) {
                     const date = new Date(data.installationdate);
                     return date.toLocaleDateString('es');
                 } },
+                // Set date format
                 { data: null, render: function(data, type, row) {
                     const date = new Date(data.lastupdate);
                     return date.toLocaleDateString('es');
                 } },
             ]
         });
+        // Object to store colors for the Charts
         let color = {
             component:[],
             system: [],
             installation: []
         };
+        // Object to store the labels of the data
         const label = {
             component: [],
             system: [],
             installation: []
         };
+        // Object to get the total of elements for each label
         const count = {
             component: [],
             system: [],
             installation: []
         };
+        // Create array with the Components and then filter with Unique values to get the Labels
         label.component = data.map(item => item.componenttype)
                     .filter((value, index, self) => self.indexOf(value) === index);
         label.system = data.map(item => item.systemname)
@@ -47,10 +55,12 @@ $(document).ready(function(){
         label.installation = data.map(item => item.installationdate)
                     .filter((value, index, self) => self.indexOf(value) === index);
         
+        // Get the total of elements for each label
         count.component = _.countBy(data.map((item => item.componenttype)));
         count.system = _.countBy(data.map((item => item.systemname)));
         count.installation = _.countBy(data.map((item => item.installationdate)));
 
+        // Set one color for each label that was found
         label.component.map((item) => {
             color.component.push(dynamicColors());
         });
@@ -60,10 +70,13 @@ $(document).ready(function(){
         label.installation.map((item) => {
             color.installation.push(dynamicColors())
         });
+
+        // Get Canvas element from the index
         const ctxComp = document.getElementById("componentChart");
         const ctxSys = document.getElementById("systemChart");
         const ctxInst = document.getElementById("installationChart");
 
+        // New instance for the Chart
         const componentChart = new Chart(ctxComp, {
             type: 'pie',
             data: {
@@ -138,6 +151,8 @@ $(document).ready(function(){
         });
     });
 });
+
+// Function to create random colors
 var dynamicColors = function() {
     var r = Math.floor(Math.random() * 255);
     var g = Math.floor(Math.random() * 255);
