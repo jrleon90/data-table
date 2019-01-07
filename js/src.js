@@ -1,6 +1,6 @@
 $(document).ready(function(){
     // Retrieve data from JSON file
-    $.getJSON('/data-table/data/data.json', function(data){
+    $.getJSON('../data/data.json', function(data){
         // Create Datatable with data get from the JSON file
         $('#dataTable').DataTable({
             data: data,
@@ -101,6 +101,7 @@ $(document).ready(function(){
                 }
             }
         });
+        // New instance for the Chart
         const systemChart = new Chart(ctxSys, {
             type: 'polarArea',
             data: {
@@ -125,6 +126,7 @@ $(document).ready(function(){
                 }
             }
         });
+        // New instance for the Chart
         const instChart = new Chart(ctxInst, {
             type: 'doughnut',
             data: {
